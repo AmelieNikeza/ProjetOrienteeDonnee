@@ -20,9 +20,10 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
 
     print("anlyse du fichier...")
     # Parcourir les entités nommées extraites
-
+    linkList = {"http://bibliotheque-numerique-sra-bretagne.huma-num.fr/s/sra-bretagne/":{}, }
     orgs = {}
     people = {}
+    links = {}
 
     """
     for ent in doc.ents:
@@ -43,3 +44,5 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
             orgs[ent.text] = orgs[ent.text] + 1 
 
     print(dict(sorted(orgs.items(), key=lambda x: x[1])))
+
+    print(dict(sorted(people.items(), key=lambda x: x[1])))
