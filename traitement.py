@@ -1,6 +1,13 @@
 import spacy
 import pandas as pd
 import re
+import urllib
+import bs4
+from bs4 import BeautifulSoup
+import pandas
+import requests
+from urllib import request
+
 
 
 # Charger le modèle linguistique
@@ -11,6 +18,27 @@ nlp.max_length = 2848830
 data = pd.read_csv('dataBretagne.csv')
 data.to_csv("data.txt", sep=',', index=False)
 """
+
+def addData(links,linkDict ):
+    sortedLinks=dict(sorted(links.items(), key=lambda x: x[1]))
+
+    for key in sortedLinks.keys():
+        for key2 in linkDict.keys():
+            if key2 in key :
+                linkDict[key2][key] = links[key]
+
+
+    return linkDict
+
+def filterData(dict ,maxOccur):
+    for key, val in dict.items():
+        for key2, val2 in val.items():
+            if val2 < maxOccur:
+                del dict[key][key2]
+
+    return dict
+           
+
 
 with open("dataBretagne.txt", "r", encoding="utf-8") as file:
     text = file.read()
@@ -26,11 +54,13 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
                 "https://cidoc-crm.org/" : {},
                 "https://vocabs.dariah.eu/":{},
                 "http://www.geonames.org/":{},
-                "https://www.catalogueoflife.org/":{}
+                "https://www.catalogueoflife.org/":{},
+                "https://ark.frantiq.fr/ark:/26678/":{}
             }
     orgs = {}
     people = {}
     links = {}
+    linkList = []
 
     """
     for ent in doc.ents:
@@ -43,10 +73,11 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
     for ent in doc.ents:
         
         if re.match(linKRegex,ent.text)  and ent.text not in links.keys():
-            print(ent.text)
             links[ent.text] = 1
+            linkList.append(ent.text)
         elif re.match(linKRegex,ent.text)  and ent.text in links.keys():
             links[ent.text] = links[ent.text] + 1
+            linkList.append(ent.text)
         elif ent.label_ == "PER" and ent.text not in people.keys():  # Personne
             people[ent.text] = 1 
         elif ent.label_ == "PER" and ent.text in people.keys():
@@ -60,7 +91,7 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
    # print(dict(sorted(orgs.items(), key=lambda x: x[1])))
 
    # print(dict(sorted(people.items(), key=lambda x: x[1])))
-
+    """
     sortedLinks=dict(sorted(links.items(), key=lambda x: x[1]))
 
     for key in sortedLinks.keys():
@@ -68,9 +99,39 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
             if key2 in key and sortedLinks[key] >= 10:
                 print("lol")
                 linkDict[key2][key] = key
+    """
 
-    print(linkDict)
-    
+    print(links)
+    print(linkList)
+    addData(links,linkDict)
+
+    #filterData(linkDict,10)
 
    
+    objLoc =[]
+
+   
+
+    for elt in linkDict["https://ark.frantiq.fr/ark:/26678/"]:
+        req = requests.get(elt.split(" ")[0])
+        soup = bs4.BeautifulSoup(req.text, "html.parser")
+        archObj = soup.find(id="containerIndex:rightTab:textPrefLabel")
+        linkDict["https://ark.frantiq.fr/ark:/26678/"][elt] = {archObj.text :  linkDict["https://ark.frantiq.fr/ark:/26678/"][elt] }
+        objLoc.append(archObj.text)
+    
+    print("\n\n")
+    print(linkDict)
+    """
+    organizedData = {}
+    start = 0
+    for loc in linkDict["http://www.geonames.org/"]:
+        print(linkDict["http://www.geonames.org/"][loc])
+        organizedData[loc] = objLoc[start : linkDict["http://www.geonames.org/"][loc]]
+        start += linkDict["http://www.geonames.org/"][loc]
+
+    print(organizedData)
+    """
+    
+
+
 
