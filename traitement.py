@@ -120,7 +120,39 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
         objLoc.append(archObj.text)
     
     print("\n\n")
-    print(linkDict)
+    #print(linkDict)
+
+    objectsInLoc = {}
+    
+    for i in range(len(linkList)-2):
+        
+        while (linkList[i+1] in linkDict["https://ark.frantiq.fr/ark:/26678/"].keys()):
+            if (linkList[i+1] in linkDict["https://ark.frantiq.fr/ark:/26678/"].keys() and linkList[i] in linkDict["http://www.geonames.org/"].keys() and linkList[i].split(" ")[1] not in objectsInLoc.keys()):  
+                
+
+                req = requests.get(linkList[i+1].split(" ")[0])
+                soup = bs4.BeautifulSoup(req.text, "html.parser")
+                archObj = soup.find(id="containerIndex:rightTab:textPrefLabel")
+            
+            
+                objectsInLoc[linkList[i].split(" ")[1]] = [archObj.text]
+            elif (linkList[i+1] in linkDict["https://ark.frantiq.fr/ark:/26678/"].keys() and linkList[i] in linkDict["http://www.geonames.org/"].keys() and linkList[i].split(" ")[1] in objectsInLoc.keys()):
+
+                req = requests.get(linkList[i+1].split(" ")[0])
+                soup = bs4.BeautifulSoup(req.text, "html.parser")
+                archObj = soup.find(id="containerIndex:rightTab:textPrefLabel")
+            
+            
+                objectsInLoc[linkList[i].split(" ")[1]].append(archObj.text)
+
+            i+=1
+        
+        
+
+
+
+    print(objectsInLoc)
+
     """
     organizedData = {}
     start = 0
