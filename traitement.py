@@ -152,6 +152,19 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
 
 
     print(objectsInLoc)
+    nbObjects = {}
+
+    for obj in objectsInLoc["Bretagne"] :
+        if (obj not in nbObjects.keys()):
+            nbObjects[obj] = 1
+        else:
+            nbObjects[obj] = nbObjects[obj]+1
+        
+    
+
+    fileObjects = pd.DataFrame({"Objets Archeologiques":nbObjects.keys(),"nombre": nbObjects.values()})
+    fileObjects.to_csv("result.csv", index=False)
+
 
     """
     organizedData = {}
