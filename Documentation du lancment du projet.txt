@@ -1,0 +1,17 @@
+Afin de lancer le projet, il est nécessaire de suivre les étapes suivantes : 
+
+1) Téléchargement des packages python adaptés : 
+    - scrapy
+    - csv 
+    - requests
+    - urllib
+    - re
+    - bs4
+    - spacy
+
+2) lancement du fichier getData.py 
+
+3) Convertir le fichier csv renvoyé par le scrapping au format txt via des outils tels que EXCEL 
+
+4) lancement du fichier traitement.py pour nettoyer, organiser les données et renvoyer le fichier csv du résultat 
+
