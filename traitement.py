@@ -47,8 +47,9 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
     linKRegex = r"(http|https)://[^\s]+"
     doc = nlp(text)
 
-    print("anlyse du fichier...")
-    # Parcourir les entités nommées extraites
+    print("analyse du fichier...")
+    
+    # Ensemble des URL du projet + celle de ark.frantiq trouvée dans les données
     linkDict = {
                 "http://bibliotheque-numerique-sra-bretagne.huma-num.fr/s/sra-bretagne/":{},
                 "https://cidoc-crm.org/" : {},
@@ -97,20 +98,23 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
     for key in sortedLinks.keys():
         for key2 in linkDict.keys():
             if key2 in key and sortedLinks[key] >= 10:
-                print("lol")
+                
                 linkDict[key2][key] = key
     """
 
     print(links)
+    print("\n\n")
     print(linkList)
+    print("\n\n")
     addData(links,linkDict)
 
-    #filterData(linkDict,10)
 
    
     objLoc =[]
 
    
+    #création de la liste contenant des dictionnaires avec pour clé, le nom du lieu et pour valeurle nombre de fois mentionné
+    # à partir des liens récupérés
 
     for elt in linkDict["https://ark.frantiq.fr/ark:/26678/"]:
         req = requests.get(elt.split(" ")[0])
@@ -120,9 +124,11 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
         objLoc.append(archObj.text)
     
     print("\n\n")
-    #print(linkDict)
+    print(linkDict)
 
     objectsInLoc = {}
+
+    #création du dictionnaire avec les lieux où des objets archéologiques ont été trouvés
     
     for i in range(len(linkList)-2):
         
@@ -154,6 +160,10 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
     print(objectsInLoc)
     nbObjects = {}
 
+# Ajout des données de Bretagne car l'ensemble bretagne est celui contenant le plus de données,
+# en effet, les autres lieux contiennent qu'un ou deux objets ce qui nous permet pas de classer 
+# de manière optimale les données par régions.
+ 
     for obj in objectsInLoc["Bretagne"] :
         if (obj not in nbObjects.keys()):
             nbObjects[obj] = 1
@@ -161,7 +171,7 @@ with open("dataBretagne.txt", "r", encoding="utf-8") as file:
             nbObjects[obj] = nbObjects[obj]+1
         
     
-
+#Création du CSV contenant les objets archéologiques et le nombre d'entre eux repérés dans le corpus
     fileObjects = pd.DataFrame({"Objets Archeologiques":nbObjects.keys(),"nombre": nbObjects.values()})
     fileObjects.to_csv("result.csv", index=False)
 
